@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>去水印工具</title>
+    <meta charset="UTF-8">
+    <style>
+        body { font-family: Arial; max-width: 500px; margin: 50px auto; padding: 20px; }
+        .btn { background: #4CAF50; color: white; padding: 10px 20px; border: none; cursor: pointer; }
+    </style>
+</head>
+<body>
+    <h1>去水印工具</h1>
+    <input type="text" id="code" placeholder="输入邀请码"><br><br>
+    <input type="file" id="file"><br><br>
+    <button class="btn" onclick="process()">去除水印</button>
+    <p id="result"></p>
+    <script>
+        async function process() {
+            const code = document.getElementById('code').value;
+            const file = document.getElementById('file').files[0];
+            if (!code || !file) { alert('请填写邀请码和选择图片'); return; }
+            const formData = new FormData();
+            formData.append('file', file);
+            formData.append('code', code);
+            const response = await fetch('/remove_watermark', { method: 'POST', body: formData });
+            if (response.ok) {
+                const blob = await response.blob();
+                const url = URL.createObjectURL(blob);
+                window.open(url);
+            } else {
+                const data = await response.json();
+                alert(data.detail);
+            }
+        }
+    </script>
+</body>
+</html>
